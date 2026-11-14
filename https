@@ -20,7 +20,10 @@ trap '' PIPE       # a closed output is not a crash: the writes fail, the method
 trap 'rc=$?; [ "$rc" -eq 0 ] || problem "the method ended with the exit code $rc (see check.sh)"' EXIT
 dbg() { [ -z "${APT_CURL_DEBUG:-}" ] || printf '%s\n' "$*" >> "$APT_CURL_DEBUG"; }
 # one write() per message: the old apt does not cope with a message that arrives in pieces
-send() { local m; dbg ">> $*"; m=$(printf '%s\n' "$@"; printf x); printf '%s\n' "${m%x}" 2>/dev/null; }
+# The whole message (its lines and the empty line that ends it) goes out in ONE write(): the printf builtin of bash writes the pieces of a format like
+# '%s\n' one by one, which put the empty line into a second write(); the apt-worker of the Application Manager read the first piece (it was woken by it)
+# and never recognised the message ("Preparing installation" for ever). Only a format with a single %s makes one write().
+send() { local m; dbg ">> $*"; m=$(printf '%s\n' "$@"; printf '\nx'); printf '%s' "${m%x}" 2>/dev/null; }
 
 # The apt 0.7 of the phone misses the first message when the method answers at once (the compiled methods are slower to start
 # because of dynamic linking): a short pause is needed, found by experiment (an immediate printf hangs apt for ever).
