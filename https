@@ -6,6 +6,8 @@
 # Honoured settings: Acquire::https::CaInfo (CA bundle), Acquire::https::Proxy, Acquire::https::Timeout,
 # Acquire::https::Curl-Insecure "true" (no certificate check). NOT honoured: Acquire::https::Verify-Peer, because the
 # phone ships Verify-Peer "false" in apt.conf.d, which would silently turn the verification off.
+# GNU coreutils first: the BusyBox mktemp/md5sum/sha256sum of the phone are missing options or tools (package coreutils-gnu)
+PATH=/usr/bin/gnu:$PATH
 CURL=${CURL:-/usr/bin/curl}
 CAINFO=; PROXY=; INSECURE=; TIMEOUT=60
 
@@ -44,7 +46,7 @@ failure() { # uri message
 acquire() { # uri filename
     local uri=$1 file=$2 hdr err rc code opts=() lm size
     [ -z "$CURL_PROBLEM" ] || { failure "$uri" "$CURL_PROBLEM"; return; }
-    hdr=$(mktemp) && err=$(mktemp) || { failure "$uri" "mktemp failed"; return; }
+    hdr=$(mktemp /tmp/atc-hdr.XXXXXX) && err=$(mktemp /tmp/atc-err.XXXXXX) || { failure "$uri" "mktemp failed"; return; }
     send "200 URI Start" "URI: $uri"
     opts=(-sS -L --proto =https,http --proto-redir =https,http --connect-timeout "$TIMEOUT" --speed-time "$TIMEOUT" --speed-limit 1
           -D "$hdr" -o "$file" -w '%{http_code}')

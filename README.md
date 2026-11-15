@@ -50,3 +50,6 @@ package, removal.
 
 ## The Application Manager and "Preparing installation" (fixed in 0.1-1maemo3)
 Up to 0.1-1maemo2 the Application Manager could hang for ever on "Preparing installation" (or while refreshing the lists) when it used this method. Cause, found with `strace` on both ends: the method wrote its first message (`100 Capabilities`) with the printf builtin of bash in **two** `write()` calls (the lines first, the empty line that ends a message a millisecond later). The `apt-worker` of the Application Manager is woken by the first write, reads the 45 bytes, does not see the end of the message and never looks again; the method waits for a request, `apt-worker` waits for the message. `apt-get` copes with a message in pieces, so it worked in a terminal, and a slow `apt-worker` (or `strace` on it) read both pieces at once, so the hang came and went. Since 1maemo3 every message is built in a variable and written with a single `printf '%s'`, which makes one `write()` (checked with `strace -e trace=write`).
+
+## Dependencies (1maemo4)
+The script needs `/bin/bash` (package `bash3`) and the GNU coreutils (`coreutils-gnu`): it puts `/usr/bin/gnu` first in `PATH`, because the BusyBox `mktemp` refuses a call without a template and BusyBox lacks `sha256sum`. Found by a user on a phone where both were missing.

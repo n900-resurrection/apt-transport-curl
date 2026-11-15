@@ -38,7 +38,7 @@ EOT
 chmod 755 "$STAGE/DEBIAN/preinst" "$STAGE/DEBIAN/postrm"
 
 SECTION=user/system
-DEPENDS="curl, apt-transport-https"
+DEPENDS="curl, apt-transport-https, bash3, coreutils-gnu"
 DISPLAY_NAME="apt-transport-curl"
 SHORT_DESC="apt over HTTPS with TLS 1.2/1.3 (through curl 8)"
 LONG_DESC="Replaces the apt method /usr/lib/apt/methods/https (old libcurl with OpenSSL 0.9.8, TLS 1.0 only) by a script that runs /usr/bin/curl. Repositories on GitHub Pages and other modern HTTPS servers then work with apt and the Application Manager.
