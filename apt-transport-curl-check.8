@@ -1,0 +1,35 @@
+.TH APT\-TRANSPORT\-CURL\-CHECK 8 "2026-11-17" "apt-transport-curl 0.1" "System Administration"
+.SH NAME
+apt\-transport\-curl\-check \- print the state of the installation of apt-transport-curl
+.SH SYNOPSIS
+.B apt\-transport\-curl\-check
+.SH DESCRIPTION
+Run it as root when
+.B apt\-get update
+or the Application Manager cannot use an
+.B https://
+repository. It changes nothing and prints no account data. The result is a list of lines marked
+.B [ ok ]
+or
+.BR [FAIL] ,
+and a final
+.B RESULT:
+line that can be pasted into a bug report.
+.PP
+The script checks the three packages (apt-transport-curl, curl, apt-transport-https), the method files
+.RB ( https
+should be our script of about 5 kB,
+.B https.distrib
+the original of about 25 kB), the handshake with apt, a test download over TLS, the clock, free memory, and the last lines of the error log of the method.
+.SH FILES
+.TP
+.I /usr/share/doc/apt\-transport\-curl/check.sh
+the script itself.
+.TP
+.I /tmp/apt\-transport\-curl.errors
+the error log of the method.
+.SH SEE ALSO
+.BR apt\-transport\-curl (8),
+.BR n900 (7)
+.SH AUTHOR
+elPytel. Project: https://github.com/n900-resurrection/apt-transport-curl
